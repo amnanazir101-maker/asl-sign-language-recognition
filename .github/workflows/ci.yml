@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      # CPU-only TensorFlow and headless OpenCV: the tests need no GPU and no screen.
+      - run: pip install tensorflow-cpu==2.21.0 opencv-python-headless numpy pytest ruff==0.17.2
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: pytest -q
